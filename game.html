@@ -1,1 +1,235 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+  <meta charset="UTF-8">
+  <title>Game Weather</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui;
+      background: #0b0f1a;
+      color: white;
+      text-align: center;
+    }
+
+    #container {
+      max-width: 900px;
+      margin: auto;
+      padding: 40px;
+    }
+
+    #stadium {
+      margin-top: 30px;
+      padding: 40px;
+      background: #151a24;
+      border-radius: 12px;
+    }
+
+    #windArea {
+      margin-top: 20px;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    #field {
+      margin: 30px auto;
+      width: 600px;
+      height: 260px;
+      background: #1f7a3a;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 0, 0, .6) inset;
+    }
+
+    .yardLine {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: white;
+      opacity: .6;
+    }
+
+    #field::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: white;
+      opacity: .25;
+    }
+
+    .y10 { left: 10%; }
+    .y20 { left: 20%; }
+    .y30 { left: 30%; }
+    .y40 { left: 40%; }
+    .y50 { left: 50%; }
+    .y60 { left: 60%; }
+    .y70 { left: 70%; }
+    .y80 { left: 80%; }
+    .y90 { left: 90%; }
+
+    .fieldLine:nth-child(1) { top: 50px; }
+    .fieldLine:nth-child(2) { top: 100px; }
+    .fieldLine:nth-child(3) { top: 150px; }
+
+    .windArrow {
+      font-size: 36px;
+      opacity: .8;
+      letter-spacing: 10px;
+      transition: transform .3s;
+    }
+
+    #windLayer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .windParticle {
+      position: absolute;
+      font-size: 22px;
+      opacity: .8;
+      animation: windFloat 6s linear infinite;
+    }
+
+    @keyframes windFloat {
+      0% {
+        transform: translateY(-30px);
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(220px);
+        opacity: 0;
+      }
+    }
+
+    .endzone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 8%;
+      background: #155e2b;
+    }
+
+    .leftEZ { left: 0; }
+    .rightEZ { right: 0; }
+
+    .y50 {
+      left: 50%;
+      width: 3px;
+      background: white;
+      opacity: .9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="container">
+    <h1 id="matchup"></h1>
+
+    <div id="stadium">
+      <h2 id="stadiumName"></h2>
+
+      <div id="windArea">
+        <div class="windArrow">↑</div>
+        <div class="windArrow">↑</div>
+        <div class="windArrow">↑</div>
+      </div>
+
+      <div id="field">
+        <div id="windLayer"></div>
+
+        <div class="endzone leftEZ"></div>
+        <div class="endzone rightEZ"></div>
+
+        <div class="yardLine y10"></div>
+        <div class="yardLine y20"></div>
+        <div class="yardLine y30"></div>
+        <div class="yardLine y40"></div>
+        <div class="yardLine y50"></div>
+        <div class="yardLine y60"></div>
+        <div class="yardLine y70"></div>
+        <div class="yardLine y80"></div>
+        <div class="yardLine y90"></div>
+      </div>
+
+      <p id="weatherInfo">Loading weather...</p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search)
+    const away = params.get("away")
+    const home = params.get("home")
+
+    document.getElementById("matchup").innerText = away + " @ " + home
+
+    const stadiums = {
+      PHI: { name: "Lincoln Financial Field", orientation: 15 },
+      BUF: { name: "Highmark Stadium", orientation: 60 },
+      KC: { name: "Arrowhead Stadium", orientation: 82 },
+      ATL: { name: "Mercedes-Benz Stadium", orientation: 0 }
+    }
+
+    const stadium = stadiums[home]
+
+    if (stadium) {
+      document.getElementById("stadiumName").innerText = stadium.name
+    }
+
+    let windDirection = 220 + 180
+    const fieldOrientation = stadium.orientation
+
+    let diff = Math.abs(windDirection - fieldOrientation)
+
+    if (diff > 180) {
+      diff = 360 - diff
+    }
+
+    let windType = ""
+
+    if (diff < 30) {
+      windType = "ALONG FIELD"
+    } else if (diff > 60 && diff < 120) {
+      windType = "CROSSWIND"
+    } else {
+      windType = "ANGLED WIND"
+    }
+
+    const arrows = document.querySelectorAll(".windArrow")
+
+    arrows.forEach(arrow => {
+      arrow.style.transform = "rotate(" + windDirection + "deg)"
+    })
+
+    document.getElementById("weatherInfo").innerText =
+      "Wind: 22 mph " + windType + " | Temp: 31°F"
+
+    const windLayer = document.getElementById("windLayer")
+
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement("div")
+      p.className = "windParticle"
+      p.innerText = "↑"
+      p.style.top = Math.random() * 180 + "px"
+      p.style.animationDelay = (Math.random() * 6) + "s"
+      p.style.transform = "rotate(" + windDirection + "deg)"
+      windLayer.appendChild(p)
+    }
+  </script>
+
+</body>
+
+</html>

@@ -224,7 +224,29 @@
       gap: 15px;
       margin-bottom: 20px;
       width: 100%;
-      justify-content: center;
+    }
+
+    .playerNav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navArrow {
+      cursor: pointer;
+      color: rgba(255,255,255,0.4);
+      font-size: 16px;
+      transition: color 0.2s;
+    }
+
+    .navArrow:hover {
+      color: #ffb020;
+    }
+
+    .navCounter {
+      font-size: 11px;
+      opacity: 0.6;
+      font-weight: bold;
     }
 
     .playerImg {
@@ -414,60 +436,88 @@
       WR: ['Rec', 'Rec Yds', 'Rec TDs']
     };
 
-    const playersData = {
+    const hardcodedData = {
       NYJ: {
-        QB: { name: "Aaron Rodgers", img: "https://a.espncdn.com/i/headshots/nfl/players/full/8439.png", stats: { optimal: { s1: "64.5%", s2: "3.2", s3: 254 }, wind: { s1: "60.2%", s2: "2.1", s3: 221 }, wet: { s1: "61.8%", s2: "2.5", s3: 236 }, cold: { s1: "62.1%", s2: "2.8", s3: 243 } } },
-        RB: { name: "Breece Hall", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4429205.png", stats: { optimal: { s1: "18", s2: "4.8", s3: 86 }, wind: { s1: "21", s2: "4.5", s3: 94 }, wet: { s1: "22", s2: "4.2", s3: 92 }, cold: { s1: "20", s2: "4.3", s3: 86 } } },
-        WR: { name: "Garrett Wilson", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4430852.png", stats: { optimal: { s1: "6.5", s2: "88", s3: "0.8" }, wind: { s1: "5.0", s2: "62", s3: "0.4" }, wet: { s1: "5.5", s2: "68", s3: "0.5" }, cold: { s1: "5.8", s2: "72", s3: "0.6" } } }
+        QB: [ { name: "Aaron Rodgers", img: "https://a.espncdn.com/i/headshots/nfl/players/full/8439.png", stats: { optimal: { s1: "64.5%", s2: "3.2", s3: 254 }, wind: { s1: "60.2%", s2: "2.1", s3: 221 }, wet: { s1: "61.8%", s2: "2.5", s3: 236 }, cold: { s1: "62.1%", s2: "2.8", s3: 243 } } } ],
+        RB: [ { name: "Breece Hall", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4429205.png", stats: { optimal: { s1: "18", s2: "4.8", s3: 86 }, wind: { s1: "21", s2: "4.5", s3: 94 }, wet: { s1: "22", s2: "4.2", s3: 92 }, cold: { s1: "20", s2: "4.3", s3: 86 } } } ],
+        WR: [ { name: "Garrett Wilson", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4430852.png", stats: { optimal: { s1: "6.5", s2: "88", s3: "0.8" }, wind: { s1: "5.0", s2: "62", s3: "0.4" }, wet: { s1: "5.5", s2: "68", s3: "0.5" }, cold: { s1: "5.8", s2: "72", s3: "0.6" } } } ]
       },
       BUF: {
-        QB: { name: "Josh Allen", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3918298.png", stats: { optimal: { s1: "63.5%", s2: "2.1", s3: 265 }, wind: { s1: "58.5%", s2: "1.4", s3: 225 }, wet: { s1: "60.2%", s2: "1.6", s3: 240 }, cold: { s1: "61.5%", s2: "1.8", s3: 252 } } },
-        RB: { name: "James Cook", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png", stats: { optimal: { s1: "15", s2: "4.5", s3: 68 }, wind: { s1: "18", s2: "4.2", s3: 75 }, wet: { s1: "19", s2: "4.0", s3: 76 }, cold: { s1: "17", s2: "4.1", s3: 70 } } },
-        WR: { name: "Keon Coleman", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4831627.png", stats: { optimal: { s1: "5.0", s2: "65", s3: "0.5" }, wind: { s1: "4.0", s2: "48", s3: "0.2" }, wet: { s1: "4.5", s2: "52", s3: "0.3" }, cold: { s1: "4.8", s2: "55", s3: "0.4" } } }
+        QB: [ { name: "Josh Allen", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3918298.png", stats: { optimal: { s1: "63.5%", s2: "2.1", s3: 265 }, wind: { s1: "58.5%", s2: "1.4", s3: 225 }, wet: { s1: "60.2%", s2: "1.6", s3: 240 }, cold: { s1: "61.5%", s2: "1.8", s3: 252 } } } ],
+        RB: [ { name: "James Cook", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4362628.png", stats: { optimal: { s1: "15", s2: "4.5", s3: 68 }, wind: { s1: "18", s2: "4.2", s3: 75 }, wet: { s1: "19", s2: "4.0", s3: 76 }, cold: { s1: "17", s2: "4.1", s3: 70 } } } ],
+        WR: [ { name: "Keon Coleman", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4831627.png", stats: { optimal: { s1: "5.0", s2: "65", s3: "0.5" }, wind: { s1: "4.0", s2: "48", s3: "0.2" }, wet: { s1: "4.5", s2: "52", s3: "0.3" }, cold: { s1: "4.8", s2: "55", s3: "0.4" } } } ]
       },
       PHI: {
-        QB: { name: "Jalen Hurts", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4040715.png", stats: { optimal: { s1: "66.5%", s2: "2.4", s3: 235 }, wind: { s1: "61.1%", s2: "1.6", s3: 198 }, wet: { s1: "63.2%", s2: "1.9", s3: 215 }, cold: { s1: "64.0%", s2: "2.1", s3: 220 } } },
-        RB: { name: "Saquon Barkley", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3929630.png", stats: { optimal: { s1: "19", s2: "4.7", s3: 89 }, wind: { s1: "23", s2: "4.4", s3: 101 }, wet: { s1: "25", s2: "4.1", s3: 103 }, cold: { s1: "22", s2: "4.3", s3: 95 } } },
-        WR: { name: "A.J. Brown", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3929630.png", stats: { optimal: { s1: "7.2", s2: "95", s3: "0.8" }, wind: { s1: "5.5", s2: "65", s3: "0.4" }, wet: { s1: "6.1", s2: "72", s3: "0.5" }, cold: { s1: "6.5", s2: "80", s3: "0.6" } } }
+        QB: [ { name: "Jalen Hurts", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4040715.png", stats: { optimal: { s1: "66.5%", s2: "2.4", s3: 235 }, wind: { s1: "61.1%", s2: "1.6", s3: 198 }, wet: { s1: "63.2%", s2: "1.9", s3: 215 }, cold: { s1: "64.0%", s2: "2.1", s3: 220 } } } ],
+        RB: [ { name: "Saquon Barkley", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3929630.png", stats: { optimal: { s1: "19", s2: "4.7", s3: 89 }, wind: { s1: "23", s2: "4.4", s3: 101 }, wet: { s1: "25", s2: "4.1", s3: 103 }, cold: { s1: "22", s2: "4.3", s3: 95 } } } ],
+        WR: [ { name: "A.J. Brown", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3929630.png", stats: { optimal: { s1: "7.2", s2: "95", s3: "0.8" }, wind: { s1: "5.5", s2: "65", s3: "0.4" }, wet: { s1: "6.1", s2: "72", s3: "0.5" }, cold: { s1: "6.5", s2: "80", s3: "0.6" } } } ]
       },
       KC: {
-        QB: { name: "Patrick Mahomes", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png", stats: { optimal: { s1: "68.2%", s2: "3.5", s3: 295 }, wind: { s1: "63.5%", s2: "2.5", s3: 260 }, wet: { s1: "64.8%", s2: "2.8", s3: 275 }, cold: { s1: "65.5%", s2: "3.0", s3: 280 } } },
-        RB: { name: "Isiah Pacheco", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4360310.png", stats: { optimal: { s1: "16", s2: "4.6", s3: 74 }, wind: { s1: "20", s2: "4.3", s3: 86 }, wet: { s1: "21", s2: "4.1", s3: 86 }, cold: { s1: "18", s2: "4.4", s3: 79 } } },
-        WR: { name: "Rashee Rice", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4429007.png", stats: { optimal: { s1: "6.8", s2: "82", s3: "0.7" }, wind: { s1: "5.8", s2: "62", s3: "0.4" }, wet: { s1: "6.2", s2: "68", s3: "0.5" }, cold: { s1: "6.4", s2: "74", s3: "0.6" } } }
+        QB: [ { name: "Patrick Mahomes", img: "https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png", stats: { optimal: { s1: "68.2%", s2: "3.5", s3: 295 }, wind: { s1: "63.5%", s2: "2.5", s3: 260 }, wet: { s1: "64.8%", s2: "2.8", s3: 275 }, cold: { s1: "65.5%", s2: "3.0", s3: 280 } } } ],
+        RB: [ { name: "Isiah Pacheco", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4360310.png", stats: { optimal: { s1: "16", s2: "4.6", s3: 74 }, wind: { s1: "20", s2: "4.3", s3: 86 }, wet: { s1: "21", s2: "4.1", s3: 86 }, cold: { s1: "18", s2: "4.4", s3: 79 } } } ],
+        WR: [ { name: "Rashee Rice", img: "https://a.espncdn.com/i/headshots/nfl/players/full/4429007.png", stats: { optimal: { s1: "6.8", s2: "82", s3: "0.7" }, wind: { s1: "5.8", s2: "62", s3: "0.4" }, wet: { s1: "6.2", s2: "68", s3: "0.5" }, cold: { s1: "6.4", s2: "74", s3: "0.6" } } } ]
       }
     };
 
     const defaultImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
 
-    function getPlayer(team, pos) {
-      if(playersData[team] && playersData[team][pos]) return playersData[team][pos];
-      // Generate default if not implemented
-      let names = { QB:"Starting QB", RB:"Starting RB", WR:"Starting WR" };
-      let defaultStats = {
-        QB: { optimal: { s1:"65%", s2:"2.0", s3:240 }, wind: { s1:"60%", s2:"1.5", s3:210 }, wet: { s1:"61%", s2:"1.7", s3:220 }, cold: { s1:"62%", s2:"1.8", s3:225 } },
-        RB: { optimal: { s1:"15", s2:"4.2", s3:65 }, wind: { s1:"18", s2:"4.0", s3:72 }, wet: { s1:"19", s2:"3.9", s3:74 }, cold: { s1:"17", s2:"4.0", s3:68 } },
-        WR: { optimal: { s1:"5", s2:"65", s3:"0.5" }, wind: { s1:"4", s2:"45", s3:"0.2" }, wet: { s1:"4.5", s2:"50", s3:"0.3" }, cold: { s1:"4.8", s2:"55", s3:"0.4" } }
-      };
-      return {
-        name: (team || "TEAM") + " " + names[pos],
-        img: defaultImg,
-        stats: defaultStats[pos]
-      };
+    const allTeamsData = {};
+
+    function getTeamData(teamName) {
+      if (allTeamsData[teamName]) return allTeamsData[teamName];
+
+      const data = hardcodedData[teamName] ? JSON.parse(JSON.stringify(hardcodedData[teamName])) : { QB: [], RB: [], WR: [] };
+      if (!data.QB) data.QB = [];
+      if (!data.RB) data.RB = [];
+      if (!data.WR) data.WR = [];
+
+      // Ensure 3 QBs
+      while(data.QB.length < 3) {
+        let i = data.QB.length + 1;
+        data.QB.push({ name: `${teamName || "TEAM"} QB${i}`, img: defaultImg, stats: { optimal: { s1: "60%", s2: "1.0", s3: 150 }, wind: { s1: "55%", s2: "0.5", s3: 120 }, wet: { s1: "58%", s2: "0.8", s3: 130 }, cold: { s1: "59%", s2: "0.9", s3: 140 } } });
+      }
+      // Ensure 3 RBs
+      while(data.RB.length < 3) {
+        let i = data.RB.length + 1;
+        data.RB.push({ name: `${teamName || "TEAM"} RB${i}`, img: defaultImg, stats: { optimal: { s1: "10", s2: "3.5", s3: 35 }, wind: { s1: "12", s2: "3.0", s3: 40 }, wet: { s1: "14", s2: "2.8", s3: 45 }, cold: { s1: "11", s2: "3.2", s3: 38 } } });
+      }
+      // Ensure 6 WRs/TEs
+      while(data.WR.length < 6) {
+        let i = data.WR.length + 1;
+        data.WR.push({ name: `${teamName || "TEAM"} WR/TE${i}`, img: defaultImg, stats: { optimal: { s1: "3.0", s2: "35", s3: "0.2" }, wind: { s1: "2.0", s2: "20", s3: "0.1" }, wet: { s1: "2.5", s2: "25", s3: "0.1" }, cold: { s1: "2.8", s2: "30", s3: "0.2" } } });
+      }
+      
+      allTeamsData[teamName] = data;
+      return data;
     }
 
     let activeCondition = 'optimal';
     let activePosition = 'QB';
 
-    function renderPlayerCard(player, condition, posType) {
+    let activeAwayIndex = 0;
+    let activeHomeIndex = 0;
+
+    function renderPlayerCard(player, condition, posType, side, activeIndex, totalPlayers) {
+      if (!player) return "";
       const stats = player.stats[condition];
       const labels = positionLabels[posType];
+      
+      let navUI = `
+        <div class="playerNav">
+          <div class="navArrow" onclick="setIndex('${side}', -1)">&#9664;</div>
+          <div class="navCounter">${activeIndex + 1} / ${totalPlayers}</div>
+          <div class="navArrow" onclick="setIndex('${side}', 1)">&#9654;</div>
+        </div>
+      `;
+
       return `
         <div class="playerHeader">
           <img class="playerImg" src="${player.img}" alt="${player.name}" onerror="this.src=defaultImg">
-          <div style="text-align:left;">
+          <div style="text-align:left; flex:1;">
             <div class="playerName">${player.name}</div>
             <div class="playerPos">${posType}</div>
           </div>
+          ${totalPlayers > 1 ? navUI : ''}
         </div>
         <div class="statGrid">
           <div class="statItem">
@@ -486,17 +536,54 @@
       `;
     }
 
+    function setIndex(side, dir) {
+      if (side === 'away') {
+        const teamData = getTeamData(away);
+        const max = teamData[activePosition].length;
+        activeAwayIndex = (activeAwayIndex + dir + max) % max;
+      } else {
+        const teamData = getTeamData(home);
+        const max = teamData[activePosition].length;
+        activeHomeIndex = (activeHomeIndex + dir + max) % max;
+      }
+      
+      const p1 = getTeamData(away)[activePosition][activeAwayIndex];
+      const p2 = getTeamData(home)[activePosition][activeHomeIndex];
+      
+      if (side === 'away') {
+        const card = document.getElementById('awayPlayerCard');
+        card.style.opacity = '0';
+        setTimeout(() => {
+          card.innerHTML = renderPlayerCard(p1, activeCondition, activePosition, 'away', activeAwayIndex, getTeamData(away)[activePosition].length);
+          card.style.opacity = '1';
+        }, 150);
+      } else {
+        const card = document.getElementById('homePlayerCard');
+        card.style.opacity = '0';
+        setTimeout(() => {
+          card.innerHTML = renderPlayerCard(p2, activeCondition, activePosition, 'home', activeHomeIndex, getTeamData(home)[activePosition].length);
+          card.style.opacity = '1';
+        }, 150);
+      }
+    }
+
     function updateCards() {
       const container = document.querySelector('.statsContainer');
       container.style.opacity = '0';
       container.style.transform = 'scale(0.98)';
       
-      let p1 = getPlayer(away, activePosition);
-      let p2 = getPlayer(home, activePosition);
+      const p1Data = getTeamData(away)[activePosition];
+      const p2Data = getTeamData(home)[activePosition];
+
+      if (activeAwayIndex >= p1Data.length) activeAwayIndex = 0;
+      if (activeHomeIndex >= p2Data.length) activeHomeIndex = 0;
+
+      let p1 = p1Data[activeAwayIndex];
+      let p2 = p2Data[activeHomeIndex];
 
       setTimeout(() => {
-        document.getElementById('awayPlayerCard').innerHTML = renderPlayerCard(p1, activeCondition, activePosition);
-        document.getElementById('homePlayerCard').innerHTML = renderPlayerCard(p2, activeCondition, activePosition);
+        document.getElementById('awayPlayerCard').innerHTML = renderPlayerCard(p1, activeCondition, activePosition, 'away', activeAwayIndex, p1Data.length);
+        document.getElementById('homePlayerCard').innerHTML = renderPlayerCard(p2, activeCondition, activePosition, 'home', activeHomeIndex, p2Data.length);
         container.style.opacity = '1';
         container.style.transform = 'scale(1)';
       }, 200);
@@ -517,6 +604,8 @@
         el.classList.add('activePos');
       }
       activePosition = pos;
+      activeAwayIndex = 0;
+      activeHomeIndex = 0;
       updateCards();
     }
 

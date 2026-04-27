@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>KICKOFFWEATHER</title>
+
+<style>
+.cardTop{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  letter-spacing:1px;
+  opacity:.7;
+}
+
+.matchup{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:.5px;
+  margin:10px 0;
+}
+
+.teamLogo{
+  width:42px;
+  height:42px;
+  vertical-align:middle;
+  margin:0 10px;
+}
+
+.weatherBlock{
+  font-size:13px;
+}
+
+.weatherRow{
+  display:flex;
+  justify-content:space-between;
+  margin-top:4px;
+}
+
+.windCompass{
+  width:16px;
+  height:16px;
+  border:2px solid rgba(255,255,255,.4);
+  border-radius:50%;
+  position:relative;
+  margin-left:6px;
+  display:inline-block;
+}
+
+.windArrow{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:2px;
+  height:8px;
+  background:white;
+  transform-origin:bottom center;
+}
+
+.label{
+  opacity:.5;
+}
+
+.impactBar{
+  height:4px;
+  background:rgba(255,255,255,.08);
+  margin-top:10px;
+  border-radius:3px;
+  overflow:hidden;
+}
+
+.impactFill{
+  height:100%;
+  background:#ff4d4d;
+  opacity:.85;
+}
+
+.empty{
+  opacity:.25;
+  border-style:dashed;
+}
+
+.legend{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  margin-bottom:16px;
+}
+
+.legendBlock{
+  background:#151a24;
+  border-radius:8px;
+  padding:10px 16px;
+  min-width:110px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.05);
+  transition:.2s;
+}
+
+.legendBlock:hover{
+  transform:translateY(-2px);
+  box-shadow:0 4px 10px rgba(0,0,0,.4);
+}
+
+.legendScore{
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:.5px;
+  margin-bottom:3px;
+}
+
+.legendText{
+  font-size:11px;
+  opacity:.65;
+}
+
+.lowBlock{
+  border-left:5px solid #4b5568;
+}
+
+.moderateBlock{
+  border-left:5px solid #f59e0b;
+  box-shadow:0 0 6px rgba(245,158,11,.35);
+}
+
+.highBlock{
+  border-left:5px solid #ef4444;
+  box-shadow:0 0 10px rgba(239,68,68,.45);
+}
+
+.extremeBlock{
+  border-left:5px solid #ff2b2b;
+  box-shadow:0 0 16px rgba(255,40,40,.9);
+}
+
+.extremeBlock .legendScore{
+  color:#ff4d4d;
+  text-shadow:0 0 8px rgba(255,60,60,.7);
+}
+
+#board{
+  max-width:1500px;
+  margin:auto;
+  padding:20px;
+  background:rgba(18,24,38,.7);
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0b0f1a;
+  color:white;
+}
+
+header{
+  text-align:center;
+  padding:18px;
+}
+
+h1{
+  color:#d7e1ff;
+  letter-spacing:3px;
+  font-weight:600;
+}
+
+#gameGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:0;
+  height:calc(100vh - 150px);
+  border:1px solid rgba(255,255,255,0.04);
+}
+
+.card{
+  background:linear-gradient(180deg,#1b2230,#111722);
+  border-right:1px solid rgba(255,255,255,0.05);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  border-left:4px solid #3a4154;
+  padding:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.45);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  transition:.2s;
+}
+
+.impactLow{
+  border-left:4px solid #3a4154;
+  opacity:.75;
+}
+
+.impactModerate{
+  border-left:4px solid #f5a623;
+  box-shadow:0 0 6px rgba(245,166,35,.3);
+}
+
+.impactHigh{
+  border-left:4px solid #ff4d4d;
+  box-shadow:0 0 14px rgba(255,77,77,.6);
+  animation:impactPulse 2s infinite, impactBackground 4s infinite;
+}
+
+.impactExtreme{
+  border-left:4px solid #ff2b2b;
+  box-shadow:0 0 18px rgba(255,40,40,.9);
+  animation:impactPulse 2s infinite, impactBackground 5s infinite;
+  transform:scale(1.02);
+}
+
+.impactBadge{
+  width:38px;
+  height:38px;
+  font-size:16px;
+}
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:50%;
+font-weight:700;
+font-size:15px;
+background:#1f2430;
+border:2px solid rgba(255,255,255,.1);
+transition:.2s;
+}
+
+.impactDial{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at center,#1f2430 40%, #0b0f1a 100%);
+  border:3px solid rgba(255,255,255,.1);
+  position:relative;
+  box-shadow:0 0 8px rgba(0,0,0,.6) inset;
+}
+
+.impactNumber{
+  font-weight:800;
+  font-size:18px;
+  letter-spacing:.5px;
+}
+
+.impact1,.impact2{
+  border-color:#4b5568;
+  color:#9ca3af;
+}
+
+.impact3,.impact4,.impact5{
+  border-color:#f59e0b;
+  color:#f59e0b;
+  box-shadow:0 0 8px rgba(245,158,11,.4);
+}
+
+.impact6,.impact7,.impact8{
+  border-color:#ef4444;
+  color:#ef4444;
+  box-shadow:0 0 12px rgba(239,68,68,.6);
+}
+
+.impact9,.impact10{
+  border-color:#ff2b2b;
+  color:#ff2b2b;
+  box-shadow:0 0 18px rgba(255,40,40,.9);
+  animation:impactPulse 1.5s infinite;
+}
+
+@keyframes impactBackground{
+  0%{background:#151a24;}
+  50%{background:#1f1a1a;}
+  100%{background:#151a24;}
+}
+
+@keyframes impactPulse{
+  0%{box-shadow:0 0 8px rgba(255,77,77,.4);}
+  50%{box-shadow:0 0 18px rgba(255,77,77,.9);}
+  100%{box-shadow:0 0 8px rgba(255,77,77,.4);}
+}
+
+.weatherCompact{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13px;
+  margin-top:6px;
+  gap:10px;
+}
+
+.weatherItem{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  opacity:.9;
+}
+
+.weatherIcon{
+  opacity:.7;
+  font-size:14px;
+}
+
+.weatherInsight{
+  margin-top:8px;
+  font-size:12px;
+  line-height:1.3;
+  opacity:.75;
+  font-style:italic;
+}
+
+.card:hover{
+  background:#1f2736;
+  transform:translateY(-6px);
+  box-shadow:0 14px 32px rgba(0,0,0,.7);
+}
+
+.impact{
+  font-weight:bold;
+  color:#ffb020;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:-1;
+}
+
+.status{
+  font-weight:bold;
+}
+
+.live{
+  color:#ff3b3b;
+  position:relative;
+}
+
+.live::before{
+  content:"";
+  width:8px;
+  height:8px;
+  background:#ff3b3b;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:6px;
+  box-shadow:0 0 8px #ff3b3b;
+  animation:livePulse 1.5s infinite;
+}
+
+@keyframes livePulse{
+  0%{opacity:1;}
+  50%{opacity:.4;}
+  100%{opacity:1;}
+}
+
+.impactLevel{
+  font-weight:bold;
+  font-size:14px;
+  letter-spacing:.5px;
+}
+
+#riskLeaderboard{
+  background:#111722;
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:18px;
+  box-shadow:0 8px 20px rgba(0,0,0,.5);
+}
+
+#riskLeaderboard h2{
+  margin:0 0 10px 0;
+  font-size:18px;
+  letter-spacing:.5px;
+  color:#ffb020;
+}
+
+.leaderboardItem{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:6px 0;
+  font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.leaderboardImpact{
+  font-weight:bold;
+  color:#ff4d4d;
+}
+
+#weatherAlerts{
+  background:#1a0f0f;
+  border:1px solid rgba(255,0,0,.3);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:18px;
+  box-shadow:0 0 14px rgba(255,0,0,.25);
+}
+
+#weatherAlerts h2{
+  margin:0 0 8px 0;
+  color:#ff4d4d;
+  font-size:18px;
+}
+
+.alertItem{
+  padding:6px 0;
+  font-size:14px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+#topPanels{
+  display:flex;
+  gap:16px;
+  margin-bottom:18px;
+}
+
+#weatherAlerts, #riskLeaderboard{
+  flex:1;
+}
+
+#alertsList, #leaderboardList{
+  max-height:140px;
+  overflow:auto;
+}
+
+.alertReason{
+  display:block;
+  font-size:12px;
+  opacity:.7;
+  margin-top:2px;
+}
+
+.lowRisk{
+  border-left:4px solid #4b5568;
+}
+
+.moderateRisk{
+  border-left:4px solid #f59e0b;
+  background:rgba(245,158,11,.08);
+}
+
+.highRisk{
+  border-left:4px solid #ef4444;
+  background:rgba(239,68,68,.08);
+}
+
+.extremeRisk{
+  border-left:4px solid #ff2b2b;
+  background:rgba(255,40,40,.15);
+}
+
+#updateBtn{
+  position:fixed;
+  top:20px;
+  right:20px;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#1f2736;
+  color:white;
+  border:1px solid rgba(255,255,255,.15);
+  font-size:20px;
+  cursor:pointer;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  box-shadow:0 4px 14px rgba(0,0,0,.6);
+  transition:.2s;
+}
+
+#updateBtn:hover{
+  transform:scale(1.1) rotate(20deg);
+  background:#2a3448;
+  box-shadow:0 6px 20px rgba(0,0,0,.8);
+}
+
+#updateBtn::after{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.1);
+  animation:pulseRing 2.5s infinite;
+}
+
+@keyframes pulseRing{
+  0%{transform:scale(1); opacity:.6;}
+  70%{transform:scale(1.6); opacity:0;}
+  100%{opacity:0;}
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>KICKOFFWEATHER</h1>
+  <p>Stop Guessing. See How Weather Impacts Every NFL Game.</p>
+</header>
+
+<div class="legend">
+  <div class="legendBlock lowBlock">
+    <div class="legendScore">1–2</div>
+    <div class="legendText">Minimal Weather Impact</div>
+  </div>
+
+  <div class="legendBlock moderateBlock">
+    <div class="legendScore">3–5</div>
+    <div class="legendText">Moderate Weather Impact</div>
+  </div>
+
+  <div class="legendBlock highBlock">
+    <div class="legendScore">6–8</div>
+    <div class="legendText">High Weather Impact</div>
+  </div>
+
+  <div class="legendBlock extremeBlock">
+    <div class="legendScore">9–10</div>
+    <div class="legendText">Extreme Weather Impact</div>
+  </div>
+</div>
+
+<div id="board">
+
+  <div id="topPanels">
+    <div id="weatherAlerts">
+      <h2>🚨 Live Weather Alerts</h2>
+      <div id="alertsList"></div>
+    </div>
+
+    <div id="riskLeaderboard">
+      <h2>🔥 Weather Risk Leaderboard</h2>
+      <div id="leaderboardList"></div>
+    </div>
+  </div>
+
+  <div id="gameGrid"></div>
+</div>
+
+<script>
+const stadiums = {
+  PHI:{ name:"Lincoln Financial Field", station:"KPHL" },
+  BUF:{ name:"Highmark Stadium", station:"KBUF" },
+  KC:{ name:"Arrowhead Stadium", station:"KMCI" },
+  ATL:{ name:"Mercedes-Benz Stadium", station:"KATL" },
+  CHI:{ name:"Soldier Field", station:"KMDW" },
+  CIN:{ name:"Paycor Stadium", station:"KCVG" },
+  IND:{ name:"Lucas Oil Stadium", station:"KIND" },
+  MIA:{ name:"Hard Rock Stadium", station:"KMIA" },
+  NO:{ name:"Caesars Superdome", station:"KMSY" },
+  NYG:{ name:"MetLife Stadium", station:"KEWR" },
+  LAC:{ name:"SoFi Stadium", station:"KLAX" },
+  SEA:{ name:"Lumen Field", station:"KSEA" },
+  SF:{ name:"Levi's Stadium", station:"KSJC" },
+  LA:{ name:"SoFi Stadium", station:"KLAX" },
+  TEN:{ name:"Nissan Stadium", station:"KBNA" },
+  WAS:{ name:"Northwest Stadium", station:"KDCA" }
+}
+
+const games = [
+  {away:"DAL",home:"PHI"},
+  {away:"KC",home:"BAL"},
+  {away:"PIT",home:"ATL"},
+  {away:"ARI",home:"BUF"},
+  {away:"TEN",home:"CHI"},
+  {away:"NE",home:"CIN"},
+  {away:"HOU",home:"IND"},
+  {away:"JAX",home:"MIA"},
+  {away:"CAR",home:"NO"},
+  {away:"MIN",home:"NYG"},
+  {away:"LV",home:"LAC"},
+  {away:"DEN",home:"SEA"},
+  {away:"GB",home:"SF"},
+  {away:"DET",home:"LA"},
+  {away:"NYJ",home:"TEN"},
+  {away:"CLE",home:"WAS"}
+]
+
+const grid = document.getElementById("gameGrid")
+const leaderboardList = document.getElementById("leaderboardList")
+const alertsList = document.getElementById("alertsList")
+
+let leaderboardData = []
+
+games.forEach(game => {
+  const temp = Math.floor(Math.random()*60)+10
+  const wind = Math.floor(Math.random()*35)
+
+  const impact = Math.min(10, Math.floor(wind/5) + (temp < 32 ? 2 : 0))
+
+  let impactClass = "impactLow"
+  if(impact >=3) impactClass = "impactModerate"
+  if(impact >=6) impactClass = "impactHigh"
+  if(impact >=9) impactClass = "impactExtreme"
+
+  const insight =
+    wind > 25 ? "Severe winds impacting passing/kicking"
+    : wind > 18 ? "Strong winds may limit deep passes"
+    : temp < 32 ? "Cold temperatures impacting game"
+    : "Minimal weather impact"
+
+// REAL PREVIOUS IMPACT (stored on game object)
+if(game.prevImpact === undefined){
+  // simulate previous being lower so alerts can trigger
+  game.prevImpact = Math.max(0, impact - Math.floor(Math.random()*4))
+}
+
+// ALERTS (only trigger on real change)
+if(impact - game.prevImpact >= 3){
+  alertsList.innerHTML += `
+    <div class="alertItem">
+      ⚠ ${game.away} @ ${game.home} — Impact ${game.prevImpact} → ${impact}
+      <span class="alertReason">${insight}</span>
+    </div>
+  `
+}
+
+// update stored value
+game.prevImpact = impact
+
+  // LEADERBOARD DATA
+  leaderboardData.push({
+    matchup: `${game.away} @ ${game.home}`,
+    impact,
+    wind
+  })
+
+  // TILE
+  grid.innerHTML += `
+    <div class="card ${impactClass}" onclick="openGame('${game.away}','${game.home}')">
+      <div class="cardTop">
+        <span>UPCOMING</span>
+        <div class="impactDial impact${impact}">
+          <div class="impactNumber">${impact}</div>
+        </div>
+      </div>
+
+      <div class="matchup">
+        <div>
+          <img class="teamLogo" src="https://a.espncdn.com/i/teamlogos/nfl/500/${game.away}.png">
+          <div style="font-size:11px">${game.away}</div>
+        </div>
+        @
+        <div>
+          <img class="teamLogo" src="https://a.espncdn.com/i/teamlogos/nfl/500/${game.home}.png">
+          <div style="font-size:11px">${game.home}</div>
+        </div>
+      </div>
+
+      <div class="weatherCompact">
+        <div class="weatherItem">🌡 ${temp}°</div>
+        <div class="weatherItem">🌬 ${wind} mph</div>
+        <div class="weatherItem">🌧 --</div>
+      </div>
+
+      <div class="weatherInsight">${insight}</div>
+    </div>
+  `
+})
+
+// BUILD LEADERBOARD
+leaderboardData
+  .sort((a,b)=>b.impact-a.impact)
+  .slice(0,4)
+  .forEach((g,i)=>{
+    let riskClass = "lowRisk"
+    if(g.impact >=3) riskClass = "moderateRisk"
+    if(g.impact >=6) riskClass = "highRisk"
+    if(g.impact >=9) riskClass = "extremeRisk"
+
+    leaderboardList.innerHTML += `
+      <div class="leaderboardItem ${riskClass}">
+        <span>${i+1}. ${g.matchup}</span>
+        <span class="leaderboardImpact">Impact ${g.impact}</span>
+        <span>🌬 ${g.wind} mph</span>
+      </div>
+    `
+  })
+
+function openGame(away,home){
+  window.location.href = `game.html?away=${away}&home=${home}`
+}
+
+function updateWeather(){
+  alertsList.innerHTML = ""
+  leaderboardList.innerHTML = ""
+  grid.innerHTML = ""
+
+  leaderboardData = []
+
+  games.forEach(game => {
+
+    const temp = Math.floor(Math.random()*60)+10
+    const wind = Math.floor(Math.random()*35)
+
+    const impact = Math.min(10, Math.floor(wind/5) + (temp < 32 ? 2 : 0))
+
+    let impactClass = "impactLow"
+    if(impact >=3) impactClass = "impactModerate"
+    if(impact >=6) impactClass = "impactHigh"
+    if(impact >=9) impactClass = "impactExtreme"
+
+    const insight =
+      wind > 25 ? "Severe winds impacting passing/kicking"
+      : wind > 18 ? "Strong winds may limit deep passes"
+      : temp < 32 ? "Cold temperatures impacting game"
+      : "Minimal weather impact"
+
+    // ALERT LOGIC (uses stored prevImpact)
+    if(impact - game.prevImpact >= 3){
+      alertsList.innerHTML += `
+        <div class="alertItem">
+          ⚠ ${game.away} @ ${game.home} — Impact ${game.prevImpact} → ${impact}
+          <span class="alertReason">${insight}</span>
+        </div>
+      `
+    }
+
+    game.prevImpact = impact
+
+    leaderboardData.push({
+      matchup: `${game.away} @ ${game.home}`,
+      impact,
+      wind
+    })
+
+    grid.innerHTML += `
+      <div class="card ${impactClass}" onclick="openGame('${game.away}','${game.home}')">
+        <div class="cardTop">
+          <span>UPCOMING</span>
+          <div class="impactDial impact${impact}">
+            <div class="impactNumber">${impact}</div>
+          </div>
+        </div>
+
+        <div class="matchup">
+          <div>
+            <img class="teamLogo" src="https://a.espncdn.com/i/teamlogos/nfl/500/${game.away}.png">
+            <div style="font-size:11px">${game.away}</div>
+          </div>
+          @
+          <div>
+            <img class="teamLogo" src="https://a.espncdn.com/i/teamlogos/nfl/500/${game.home}.png">
+            <div style="font-size:11px">${game.home}</div>
+          </div>
+        </div>
+
+        <div class="weatherCompact">
+          <div class="weatherItem">🌡 ${temp}°</div>
+          <div class="weatherItem">🌬 ${wind} mph</div>
+          <div class="weatherItem">🌧 --</div>
+        </div>
+
+        <div class="weatherInsight">${insight}</div>
+      </div>
+    `
+  })
+
+  // rebuild leaderboard
+  leaderboardData
+    .sort((a,b)=>b.impact-a.impact)
+    .slice(0,4)
+    .forEach((g,i)=>{
+      leaderboardList.innerHTML += `
+        <div class="leaderboardItem">
+          <span>${i+1}. ${g.matchup}</span>
+          <span class="leaderboardImpact">Impact ${g.impact}</span>
+          <span>🌬 ${g.wind} mph</span>
+        </div>
+      `
+    })
+}
+
+</script>
+<button id="updateBtn" onclick="updateWeather()">↻</button>
+</body>
+</html>
